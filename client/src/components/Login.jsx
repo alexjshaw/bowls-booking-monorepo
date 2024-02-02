@@ -11,8 +11,16 @@ import {
   Button,
 } from '@mantine/core';
 import classes from './Login.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
+
+  const navigate = useNavigate();
+
+  const handleCreateAccountClick = () => {
+    navigate('/register');
+  };
+
   return (
     <Container size={420} my={40}>
       <Title ta="center" className={classes.title}>
@@ -20,7 +28,7 @@ export function Login() {
       </Title>
       <Text c="dimmed" size="sm" ta="center" mt={5}>
         Do not have an account yet?{' '}
-        <Anchor size="sm" component="button">
+        <Anchor size="sm" component="button" onClick={handleCreateAccountClick}>
           Create account
         </Anchor>
       </Text>
