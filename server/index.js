@@ -4,7 +4,18 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const { connectToDB } = require('./database/connect');
 
+const userRoute = require('./routes/user')
+const clubRoute = require('./routes/club')
+
 const app = express();
+
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
+app.use(morgan('dev'));
+
+app.use('/user', userRoute)
+app.use('/club', clubRoute)
 
 const port = process.env.PORT || 5000;
 

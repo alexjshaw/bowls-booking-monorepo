@@ -12,6 +12,7 @@ import {
   Button,
 } from '@mantine/core';
 import classes from './Register.module.css';
+import { registerWithEmailAndPassword } from "../utils/firebase";
 
 export function Register() {
 
@@ -20,6 +21,17 @@ export function Register() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("")
+
+  const register = async () => {
+    try {
+      await registerWithEmailAndPassword(
+        email,
+        password
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <Container size={420} my={40}>
@@ -45,8 +57,8 @@ export function Register() {
             Forgot password?
           </Anchor>
         </Group>
-        <Button fullWidth mt="xl">
-          Sign in
+        <Button fullWidth mt="xl" onClick={register}>
+          Create Account
         </Button>
       </Paper>
     </Container>
