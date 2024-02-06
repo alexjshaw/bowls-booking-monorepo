@@ -10,6 +10,7 @@ import {
   Container,
   Group,
   Button,
+  Select
 } from '@mantine/core';
 import classes from './Register.module.css';
 import { registerWithEmailAndPassword } from "../utils/firebase";
@@ -21,17 +22,69 @@ export function Register() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("")
+  const [selectedClub, setSelectedClub] = useState("")
+  const [clubs, setClubs] = useState([])
+
+  useEffect(() => {
+    async function fetchClubs() {
+      try {
+        const response = await fetch('http://localhost:4000/club');
+        if (response.ok) {
+          const data = await response.json();
+          setClubs(data);
+        } else {
+          console.error('Failed to fetch clubs:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    fetchClubs();
+  }, []);
 
   const register = async () => {
     try {
-      await registerWithEmailAndPassword(
+      const userUID = await registerWithEmailAndPassword(
         email,
         password
       )
+
+      const userData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        firebaseUID: userUID,
+        club: selectedClub,
+      }
+
+      await createUserDocument(userData)
+
     } catch (error) {
       console.error(error)
     }
   }
+
+  const createUserDocument = async (userData) => {
+    try {
+      const response = await fetch('http://localhost:4000/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({...userData})
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to create user document');
+      }
+  
+      console.log('User document created successfully');
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+  
 
   return (
     <Container size={420} my={40}>
@@ -51,6 +104,14 @@ export function Register() {
         <TextInput label="Phone Number" placeholder="00000000000" value={phone} onChange={(e) => setPhone(e.target.value)} />
         <TextInput label="First Name" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
         <TextInput label="Last Name" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+        <Select
+          label="Club"
+          placeholder="Select a club"
+          value={selectedClub}
+          onChange={(value) => setSelectedClub(value)}
+          data={clubs.map(club => ({ label: club.name, value: club._id }))}
+          required
+        />
         <Group justify="space-between" mt="lg">
           <Checkbox label="Remember me" />
           <Anchor component="button" size="sm">

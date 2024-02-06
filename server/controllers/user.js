@@ -15,6 +15,7 @@ const createUser = async (req, res) => {
       firebaseUID: req.body.firebaseUID,
       role: req.body.role
     }
+    console.log(query)
     const newUser = await userDatabase.createUser(query)
     const updatedClub = await clubDatabase.updateClubWithNewMember(req.body.club, newUser._id);
     return sendDataResponse(res, 201, newUser, updatedClub)
